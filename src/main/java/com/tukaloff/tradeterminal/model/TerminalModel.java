@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 public class TerminalModel {
 
-    List<Portfolio.PortfolioPosition> portfolioPositions;
-    Portfolio.PortfolioPosition selected;
+    private List<Portfolio.PortfolioPosition> portfolioPositions;
+    private Instrument selected;
+    private List<TradePosition> tradePositions;
 }
