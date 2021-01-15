@@ -94,4 +94,22 @@ public class ViewController {
     public void addSelectionListener(SelectionListener listener) {
         this.selectionListeners.add(listener);
     }
+
+    public void updatePlot() {
+        executorService.submit(() ->
+                changeListeners.get(Component.CANDLES_LISTENER).redraw(null));
+    }
+
+    public List<TradePosition> getTradePositions() {
+        return modelController.getTradePositions();
+    }
+
+    public void zoomPlot(int value) {
+        modelController.zoomPlot(value);
+        updatePlot();
+    }
+
+    public int getZoom() {
+        return modelController.getZoom();
+    }
 }

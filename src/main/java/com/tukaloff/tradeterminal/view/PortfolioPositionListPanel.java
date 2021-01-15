@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class PortfolioPositionList extends JPanel implements ChangeListener {
+public class PortfolioPositionListPanel extends JPanel implements ChangeListener {
 
     private List<PortfolioPositionItem> portfolioPositionItemList;
     private ViewController viewController;
 
-    public PortfolioPositionList(ViewController viewController) {
+    public PortfolioPositionListPanel(ViewController viewController) {
         super(new GridLayout(0, 1));
         this.viewController = viewController;
         this.portfolioPositionItemList = new ArrayList<>();

@@ -8,11 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Objects;
 
 @Slf4j
-public class TradesFrame extends JPanel implements ChangeListener, SelectionListener {
+public class TradesPanel extends JPanel implements ChangeListener, SelectionListener {
 
     private final ViewController viewController;
     private JPanel tradesPanel;
@@ -20,18 +22,18 @@ public class TradesFrame extends JPanel implements ChangeListener, SelectionList
     private TextField tickerTextField;
     private TextField openValueTextField;
 
-    public TradesFrame(ViewController viewController) {
-        super(new GridLayout(0, 1));
+    public TradesPanel(ViewController viewController) {
+        super(new BorderLayout());
         this.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         this.viewController = viewController;
         tradesPanel = new JPanel(new GridLayout(0, 1));
-        this.add(tradesPanel);
+        this.add(tradesPanel, BorderLayout.NORTH);
         String[] header = new String[]{"Date", "Tiker", "Buy", "Fee", "MinSell", "Profit"};
         DefaultTableModel defaultTableModel = new DefaultTableModel();
         defaultTableModel.setColumnIdentifiers(header);
         defaultTableModel.addRow(header);
         table = new JTable(defaultTableModel);
-        this.add(table);
+        this.add(table, BorderLayout.CENTER);
         viewController.addListener(this, Component.TRADE_POSITIONS_LISTENER);
         viewController.addSelectionListener(this);
         addAddingTradePanel();
@@ -95,6 +97,20 @@ public class TradesFrame extends JPanel implements ChangeListener, SelectionList
             log.info("pressed: {}, {}", tickerText, openValueText);
             viewController.createTradePosition(openValueText, openFeePercText, closeFeePercText, tickerText);
         });
+//        JSlider slider = new JSlider();
+//        addTradePanel.add(slider);
+//        slider.setMaximum(24);
+//        slider.setMinimum(1);
+//        slider.setValue(1);
+//        slider.setPaintLabels(true);
+//        slider.setMajorTickSpacing(1);
+//        slider.setSnapToTicks(true);
+//        slider.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                viewController.zoomPlot(slider.getValue());
+//            }
+//        });
     }
 
     @Override

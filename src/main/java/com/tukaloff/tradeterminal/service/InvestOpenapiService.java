@@ -113,7 +113,7 @@ public class InvestOpenapiService {
     }
 
     public List<Candle> getCandlesLastHour(String figi) {
-        ZonedDateTime from = ZonedDateTime.now().minusHours(1);
+        ZonedDateTime from = ZonedDateTime.now().minusHours(24);
         ZonedDateTime to = ZonedDateTime.now();
         log.info("{} {}", from.toOffsetDateTime(), to.toOffsetDateTime());
         try {

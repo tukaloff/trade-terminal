@@ -40,6 +40,7 @@ public class ModelController {
 
     public ModelController() {
         terminalModel = new TerminalModel();
+        terminalModel.setDepth(1);
     }
 
     @PostConstruct
@@ -68,6 +69,7 @@ public class ModelController {
                     .getCandlesLastHour(terminalModel.getSelected().getPortfolioPosition().figi);
             if (candlesLastHour != null) {
                 terminalModel.getSelected().setCandles(candlesLastHour);
+                viewController.updatePlot();
             }
         }
         viewController.updateCommonView(terminalModel.getSelected());
@@ -128,7 +130,8 @@ public class ModelController {
                 .filter(position -> ticker.equals(position.ticker))
                 .findFirst().get();
         try {
-            BigDecimal currentPrice = investOpenapiService.getCurrentPrice(portfolioPosition.figi);
+            BigDecimal currentPrice =
+                    investOpenapiService.getCurrentPrice(portfolioPosition.figi);
             return currentPrice;
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
@@ -136,5 +139,21 @@ public class ModelController {
         return Objects.requireNonNull(terminalModel.getPortfolioPositions().stream()
                 .filter(position -> ticker.equals(position.ticker)).findFirst().get()
                 .averagePositionPrice).value;
+    }
+
+    public List<TradePosition> getTradePositions() {
+        return terminalModel.getTradePositions();
+    }
+
+    public void zoomPlot(int value) {
+        int depth = terminalModel.getDepth() + value;
+        if (depth > terminalModel.getSelected().getCandles().size()/60+1)
+            depth = terminalModel.getSelected().getCandles().size()/60+1;
+        if (depth < 1) depth = 1;
+        terminalModel.setDepth(depth);
+    }
+
+    public int getZoom() {
+        return terminalModel.getDepth();
     }
 }

@@ -29,10 +29,10 @@ public class MainForm extends JFrame {
         var mainPanel = new JPanel(new BorderLayout());
         this.setContentPane(mainPanel);
 
-        var list = new PortfolioPositionList(viewController);
+        var list = new PortfolioPositionListPanel(viewController);
         mainPanel.add(list, BorderLayout.WEST);
 
-        center = new JPanel(new GridLayout(0, 1));
+        center = new JPanel(new BorderLayout());
         mainPanel.add(center, BorderLayout.CENTER);
         repaintCenter();
 
@@ -47,9 +47,9 @@ public class MainForm extends JFrame {
     private void repaintCenter() {
         Arrays.stream(center.getComponents()).forEach(component -> center.remove(component));
         JPanel top_center = new CommonViewPanel(viewController);
-        center.add(top_center);
-        JPanel bottom_center = new TradesFrame(viewController);
-        center.add(bottom_center);
+        center.add(top_center, BorderLayout.CENTER);
+        JPanel bottom_center = new TradesPanel(viewController);
+        center.add(bottom_center, BorderLayout.SOUTH);
 //        top_center.add(new Label(viewController.getSelected().name));
     }
 }
