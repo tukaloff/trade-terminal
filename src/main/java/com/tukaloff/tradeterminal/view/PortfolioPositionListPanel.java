@@ -40,13 +40,11 @@ public class PortfolioPositionListPanel extends JPanel implements ChangeListener
 
             public void installUI(JComponent c) {
                 super.installUI(c);
-                // enable mouse motion events for the layer's subcomponents
                 ((JLayer) c).setLayerEventMask(AWTEvent.MOUSE_EVENT_MASK);
             }
 
             public void uninstallUI(JComponent c) {
                 super.uninstallUI(c);
-                // reset the layer event mask
                 ((JLayer) c).setLayerEventMask(0);
             }
 
@@ -64,7 +62,6 @@ public class PortfolioPositionListPanel extends JPanel implements ChangeListener
 
     @Override
     public void redraw(Object change) {
-//        Arrays.stream(this.getComponents()).forEach(this::remove);
         List<Portfolio.PortfolioPosition> list = (List<Portfolio.PortfolioPosition>) change;
         list.forEach(position -> {
             Optional<PortfolioPositionItem> first = portfolioPositionItemList.stream()

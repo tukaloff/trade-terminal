@@ -5,6 +5,7 @@ import com.tukaloff.tradeterminal.model.Instrument;
 import com.tukaloff.tradeterminal.model.TradePosition;
 import lombok.extern.slf4j.Slf4j;
 import ru.tinkoff.invest.openapi.models.market.Candle;
+import ru.tinkoff.invest.openapi.models.portfolio.Portfolio;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +38,6 @@ public class PlotPanel extends JPanel implements ChangeListener {
         if (min.isEmpty()) return;
         double lowest = min.get().lowestPrice.doubleValue();
         Optional<Candle> max = candles.stream().max(Comparator.comparing(o -> o.highestPrice));
-        if (max.isEmpty()) return;
         double highest = max.get().highestPrice.doubleValue();
         Graphics2D g2 = (Graphics2D) g;
         Rectangle r = getBounds();
@@ -69,6 +69,23 @@ public class PlotPanel extends JPanel implements ChangeListener {
                     (int) (xCord + r.getWidth() / candlesCount / 4),
                     (int) (r.getBounds().height - (candle.lowestPrice.doubleValue() - lowest) / (highest - lowest) * r.getBounds().height));
         }
+        Candle lastCandle = selected.getLastCandle();
+        if (lastCandle.closePrice.doubleValue() > lastCandle.openPrice.doubleValue()) {
+            g2.setPaint(Color.GREEN);
+        } else {
+            g2.setPaint(Color.RED);
+        }
+        Optional<Portfolio.PortfolioPosition> portfolioPosition = viewController.getPortfolioPositions().stream().filter(position -> position.figi.equals(lastCandle.figi)).findFirst();
+        String tickerString = "";
+        if (portfolioPosition.isPresent()) {
+            tickerString = portfolioPosition.get().name + " (" + portfolioPosition.get().ticker + ") ";
+        }
+        tickerString += "O " + lastCandle.openPrice + " ";
+        tickerString += "H " + lastCandle.highestPrice + " ";
+        tickerString += "L " + lastCandle.lowestPrice + " ";
+        tickerString += "C " + lastCandle.closePrice + " ";
+        tickerString += "T " + lastCandle.tradesValue + " ";
+        g2.drawString(tickerString, 10, 50);
     }
 
     @Override

@@ -26,4 +26,8 @@ public class Instrument {
         }
         return lastCandle;
     }
+
+    public void setLastCandle(Candle lastCandle) {
+        this.lastCandle = lastCandle;
+    }
 }

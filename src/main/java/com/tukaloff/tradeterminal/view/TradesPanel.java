@@ -42,7 +42,7 @@ public class TradesPanel extends JPanel implements ChangeListener, SelectionList
     @Override
     public void redraw(Object change) {
         ArrayList<TradePosition> tradePositions = (ArrayList<TradePosition>) change;
-        log.info((long) tradePositions.size() + "");
+        log.debug((long) tradePositions.size() + "");
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         // todo: fix Exception in thread "AWT-EventQueue-0" java.lang.ArrayIndexOutOfBoundsException: 2 >= 1
         model.getDataVector().removeAllElements();
@@ -94,23 +94,9 @@ public class TradesPanel extends JPanel implements ChangeListener, SelectionList
             String openValueText = openValueTextField.getText();
             String openFeePercText = openFeePercTextField.getText();
             String closeFeePercText = closeFeePercTextField.getText();
-            log.info("pressed: {}, {}", tickerText, openValueText);
+            log.debug("pressed: {}, {}", tickerText, openValueText);
             viewController.createTradePosition(openValueText, openFeePercText, closeFeePercText, tickerText);
         });
-//        JSlider slider = new JSlider();
-//        addTradePanel.add(slider);
-//        slider.setMaximum(24);
-//        slider.setMinimum(1);
-//        slider.setValue(1);
-//        slider.setPaintLabels(true);
-//        slider.setMajorTickSpacing(1);
-//        slider.setSnapToTicks(true);
-//        slider.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                viewController.zoomPlot(slider.getValue());
-//            }
-//        });
     }
 
     @Override

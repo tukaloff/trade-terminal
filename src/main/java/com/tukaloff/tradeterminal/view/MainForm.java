@@ -50,6 +50,5 @@ public class MainForm extends JFrame {
         center.add(top_center, BorderLayout.CENTER);
         JPanel bottom_center = new TradesPanel(viewController);
         center.add(bottom_center, BorderLayout.SOUTH);
-//        top_center.add(new Label(viewController.getSelected().name));
     }
 }

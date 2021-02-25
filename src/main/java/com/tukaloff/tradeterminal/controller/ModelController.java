@@ -6,10 +6,13 @@ import com.tukaloff.tradeterminal.model.TradePosition;
 import com.tukaloff.tradeterminal.service.InvestOpenapiService;
 import com.tukaloff.tradeterminal.service.StoreTradesService;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.tinkoff.invest.openapi.models.market.Candle;
 import ru.tinkoff.invest.openapi.models.portfolio.Portfolio;
+import ru.tinkoff.invest.openapi.models.streaming.StreamingEvent;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
@@ -20,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -55,6 +59,47 @@ public class ModelController {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            }
+        });
+        investOpenapiService.setSubscriber(new Subscriber<>() {
+
+            Subscription subscription;
+            Executor executor = Executors.newFixedThreadPool(10);
+
+            @Override
+            public void onSubscribe(Subscription subscription) {
+                log.info("onSubscribe {}", subscription);
+                if (this.subscription != null)
+                    this.subscription.cancel();
+                this.subscription = subscription;
+                executor.execute(() -> subscription.request(10));
+            }
+
+            @Override
+            public void onNext(StreamingEvent streamingEvent) {
+                log.info("onNext {}", streamingEvent);
+                StreamingEvent.Candle streamingEvent1 = (StreamingEvent.Candle) streamingEvent;
+                Candle candle = new Candle(streamingEvent1.getFigi(),
+                        streamingEvent1.getInterval(),
+                        streamingEvent1.getOpenPrice(),
+                        streamingEvent1.getClosingPrice(),
+                        streamingEvent1.getHighestPrice(),
+                        streamingEvent1.getLowestPrice(),
+                        streamingEvent1.getTradingValue(),
+                        streamingEvent1.getDateTime().toOffsetDateTime());
+                getSelected().setLastCandle(candle);
+                viewController.updatePlot();
+                executor.execute(() -> subscription.request(10));
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                log.info("onError {}", throwable);
+            }
+
+            @Override
+            public void onComplete() {
+                log.info("onComplete");
             }
         });
     }
@@ -94,6 +139,7 @@ public class ModelController {
         Instrument instrument = new Instrument();
         instrument.setPortfolioPosition(portfolioPosition);
         terminalModel.setSelected(instrument);
+        investOpenapiService.subscribe(portfolioPosition.figi);
     }
 
     public TradePosition createTradePosition(BigDecimal openValue,

@@ -11,6 +11,7 @@ import ru.tinkoff.invest.openapi.models.market.CandleInterval;
 import ru.tinkoff.invest.openapi.models.market.HistoricalCandles;
 import ru.tinkoff.invest.openapi.models.market.Instrument;
 import ru.tinkoff.invest.openapi.models.portfolio.Portfolio;
+import ru.tinkoff.invest.openapi.models.streaming.StreamingEvent;
 import ru.tinkoff.invest.openapi.models.streaming.StreamingRequest;
 import ru.tinkoff.invest.openapi.models.user.BrokerAccount;
 import ru.tinkoff.invest.openapi.okhttp.OkHttpOpenApiFactory;
@@ -21,6 +22,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
@@ -47,6 +49,10 @@ public class InvestOpenapiService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void setSubscriber(Subscriber<StreamingEvent> subscriber) {
+        api.getStreamingContext().getEventPublisher().subscribe(subscriber);
     }
 
     public List<Portfolio.PortfolioPosition> getPortfolioPositions() throws ExecutionException, InterruptedException {
@@ -93,6 +99,11 @@ public class InvestOpenapiService {
         } catch (Exception e) {
             log.error(e.getLocalizedMessage());
         }
+    }
+
+    public void subscribe(String figi) {
+        api.getStreamingContext().sendRequest(StreamingRequest.subscribeCandle(figi, CandleInterval.ONE_MIN));
+//        var portfolio = api.getPortfolioContext().getPortfolio(brokerAccount.brokerAccountId).join();
     }
 
     public Portfolio.PortfolioPosition getPortfolioPosition(String figi) throws ExecutionException, InterruptedException {
